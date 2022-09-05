@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints\Length;
         //'validation_groups' =>[]
    // ],
     normalizationContext: ['groups' => ['read:collection']],
-    denormalisation: ['groups'=> ['write:Article']],
+    denormalizationContext: ['groups'=> ['write:Article']],
     collectionOperations: [
         'get',
         'post' =>[
@@ -26,8 +26,6 @@ use Symfony\Component\Validator\Constraints\Length;
         ]
     ],
 
-
-
     itemOperations: [
         'put' ,
         //=> [
@@ -36,10 +34,10 @@ use Symfony\Component\Validator\Constraints\Length;
         // ],
         'delete',
         'get' => [
-            'normalization_context' => ['groups' => ['read:collection','read:item', 'read:Article']]
+            'normalization_context' => ['groups' => ['read:collection','read:item', 'write:Article']]
+            ]
         ]
-    ]
-
+)]
 class Article
 {
     #[ORM\Id]
@@ -69,8 +67,8 @@ class Article
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updatedDate = null;
 
-    #[ORM\ManyToOne(inversedBy: 'articles')]
-    #[Groups(['read:item','put:Article'])]// on va preciser que la category est visible
+    #[ORM\ManyToOne(targetEntity: Categorie::class, inversedBy: 'articles',cascade:"persist")]
+    #[Groups(['read:item','write:Article'])]// on va preciser que la category est visible
     private ?Categorie $category = null;
     
     public function __construct(){
