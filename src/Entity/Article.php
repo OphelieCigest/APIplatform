@@ -8,6 +8,7 @@ use App\Repository\ArticleRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\Valid;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 #[ApiResource(
@@ -18,12 +19,13 @@ use Symfony\Component\Validator\Constraints\Length;
     denormalizationContext: ['groups'=> ['write:Article']],
     collectionOperations: [
         'get',
-        'post' =>[
-            'validation_groups' =>[Article::class, 'validationGroups']
+        'post'
+        // =>[
+            // 'validation_groups' =>[Article::class, 'validationGroups']
             // La par rapport à avant je vais utilser la classe qui permet de renvoyer à des groupes de validation
             // on vas cree des groupes de validation ici par exemple la contrainte de longueur du titre sera definie
             //uniquement à la création de mon Article
-        ]
+       // ]
     ],
 
     itemOperations: [
@@ -57,7 +59,7 @@ class Article
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['read:item'])]
+    #[Groups(['read:item','write:Article'])]
     private ?string $content = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -67,9 +69,11 @@ class Article
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updatedDate = null;
 
-    #[ORM\ManyToOne(targetEntity: Categorie::class, inversedBy: 'articles',cascade:"persist")]
-    #[Groups(['read:item','write:Article'])]// on va preciser que la category est visible
-    private ?Categorie $category = null;
+    #[ORM\ManyToOne(targetEntity: Categorie::class, inversedBy: 'articles', cascade: ['ALL'])]
+    #[Groups(['read:item','write:Article']),
+    Valid()]
+    // on va preciser que la category est visible
+    private ?Categorie $category;
     
     public function __construct(){
         $this->createdDate = new \DateTime();
