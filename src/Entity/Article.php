@@ -11,18 +11,33 @@ use Symfony\Component\Validator\Constraints\Length;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 #[ApiResource(
+    //attributes: [
+        //'validation_groups' =>[]
+   // ],
     normalizationContext: ['groups' => ['read:collection']],
+    denormalisation: ['groups'=> ['write:Article']],
+    collectionOperations: [
+        'get',
+        'post' =>[
+            'validation_groups' =>['created:Article']// on vas cree des groupes de validation ici par exemple la contrainte de longueur du titre sera definie
+            //uniquement à la création de mon Article
+        ]
+    ],
+
+
+
     itemOperations: [
-        'put'=> [
-            //je veux que mon utilisateur puisse modifier uniquement le titre c'est donc lui qui rentre des donnees c'est la denormalisation
-            'desormalization_context' => ['groups' => ['put:Article']]
-        ],
+        'put' ,
+        //=> [
+        //     //je veux que mon utilisateur puisse modifier uniquement le titre c'est donc lui qui rentre des donnees c'est la denormalisation
+        //     'desormalization_context' => ['groups' => ['put:Article']]
+        // ],
         'delete',
         'get' => [
             'normalization_context' => ['groups' => ['read:collection','read:item', 'read:Article']]
         ]
     ]
-)]
+
 class Article
 {
     #[ORM\Id]
@@ -33,7 +48,7 @@ class Article
 
     #[ORM\Column(length: 255)]
     #[Groups(['read:collection', 'put:Article']),
-        Length(min: 2)
+        Length(min: 2, groups:['create:Article'])
     ]
     private ?string $title = null;
 
