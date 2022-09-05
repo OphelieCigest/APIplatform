@@ -19,7 +19,9 @@ use Symfony\Component\Validator\Constraints\Length;
     collectionOperations: [
         'get',
         'post' =>[
-            'validation_groups' =>['created:Article']// on vas cree des groupes de validation ici par exemple la contrainte de longueur du titre sera definie
+            'validation_groups' =>[Article::class, 'validationGroups']
+            // La par rapport à avant je vais utilser la classe qui permet de renvoyer à des groupes de validation
+            // on vas cree des groupes de validation ici par exemple la contrainte de longueur du titre sera definie
             //uniquement à la création de mon Article
         ]
     ],
@@ -76,7 +78,10 @@ class Article
         $this->updatedDate = new \DateTime();
 
     }
-
+    //fonction permettant d'appliquer des conditions specifiques
+    public static function validationGroups(self $article){
+        return['create:Article'];
+    }
     public function getId(): ?int
     {
         return $this->id;
