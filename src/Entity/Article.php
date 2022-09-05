@@ -2,13 +2,15 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ArticleRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Validator\Constraints\Valid;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\Valid;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 #[ApiResource(
@@ -16,29 +18,23 @@ use Symfony\Component\Validator\Constraints\Valid;
     normalizationContext: ['groups' => ['read:collection']],
     denormalizationContext: ['groups'=> ['write:Article']],
     paginationItemsPerPage: 2,
+    paginationMaximumItemsPerPage:2,
+    paginationClientItemsPerPage:true,//l'utilisateur pourra pilotter les choses
     collectionOperations: [
         'get',
         'post'
-        // =>[
-            // 'validation_groups' =>[Article::class, 'validationGroups']
-            // La par rapport à avant je vais utilser la classe qui permet de renvoyer à des groupes de validation
-            // on vas cree des groupes de validation ici par exemple la contrainte de longueur du titre sera definie
-            //uniquement à la création de mon Article
-       // ]
     ],
-
     itemOperations: [
         'put' ,
-        //=> [
-        //     //je veux que mon utilisateur puisse modifier uniquement le titre c'est donc lui qui rentre des donnees c'est la denormalisation
-        //     'desormalization_context' => ['groups' => ['put:Article']]
-        // ],
         'delete',
         'get' => [
             'normalization_context' => ['groups' => ['read:collection','read:item', 'write:Article']]
             ]
         ]
-)]
+        ),
+ApiFilter(SearchFilter::class, properties: ['id' => 'exact', 'title' =>'partial'])
+]
+
 class Article
 {
     #[ORM\Id]
