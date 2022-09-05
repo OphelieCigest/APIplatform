@@ -12,11 +12,10 @@ use Symfony\Component\Validator\Constraints\Valid;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 #[ApiResource(
-    //attributes: [
-        //'validation_groups' =>[]
-   // ],
+
     normalizationContext: ['groups' => ['read:collection']],
     denormalizationContext: ['groups'=> ['write:Article']],
+    paginationItemsPerPage: 2,
     collectionOperations: [
         'get',
         'post'
