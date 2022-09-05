@@ -12,6 +12,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     normalizationContext: ['groups' => ['read:collection']],
     itemOperations: [
+        'put'=> [
+            //je veux que mon utilisateur puisse modifier uniquement le titre c'est donc lui qui rentre des donnees c'est la denormalisation
+            'desormalization_context' => ['groups' => ['put:Article']]
+        ],
+        'delete',
         'get' => [
             'normalization_context' => ['groups' => ['read:collection','read:item', 'read:Article']]
         ]
@@ -26,7 +31,7 @@ class Article
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read:collection'])]
+    #[Groups(['read:collection', 'put:Article'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
@@ -45,8 +50,14 @@ class Article
     private ?\DateTimeInterface $updatedDate = null;
 
     #[ORM\ManyToOne(inversedBy: 'articles')]
-    #[Groups(['read:item'])]// on va preciser que la category est visible
+    #[Groups(['read:item','put:Article'])]// on va preciser que la category est visible
     private ?Categorie $category = null;
+    
+    public function __construct(){
+        $this->createdDate = new \DateTime();
+        $this->updatedDate = new \DateTime();
+
+    }
 
     public function getId(): ?int
     {
