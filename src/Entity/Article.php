@@ -69,6 +69,10 @@ class Article
     Valid()]
     // on va preciser que la category est visible
     private ?Categorie $category;
+
+    //
+    #[ORM\Column(type: 'boolean', options:["default" => false])]
+    private ?bool $online = false;
     
     public function __construct(){
         $this->createdDate = new \DateTime();
@@ -152,6 +156,18 @@ class Article
     public function setCategory(?Categorie $category): self
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function isOnline(): ?bool
+    {
+        return $this->online;
+    }
+
+    public function setOnline(bool $online): self
+    {
+        $this->online = $online;
 
         return $this;
     }
