@@ -34,7 +34,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
         ),
 ApiFilter(SearchFilter::class, properties: ['id' => 'exact', 'title' =>'partial'])
 ]
-
+//On va utider des filtres ci dessus pour  Lister nos Articles
 class Article
 {
     #[ORM\Id]
